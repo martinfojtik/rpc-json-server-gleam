@@ -1,0 +1,16 @@
+###
+GET http://localhost:3000/ping
+
+###
+POST http://localhost:3000/rpc
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "get_pet",
+    "params": [
+        7
+    ],
+    "id": 0
+}
+
