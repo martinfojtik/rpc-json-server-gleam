@@ -6,11 +6,21 @@ POST http://localhost:3000/rpc
 Content-Type: application/json
 
 {
+  "jsonrpc": "2.0",
+  "method": "ping",
+  "id": 123
+}
+
+###
+POST http://localhost:3000/rpc
+Content-Type: application/json
+
+{
     "jsonrpc": "2.0",
     "method": "get_pet",
     "params": [
         7
     ],
-    "id": 0
+    "id": 123
 }
 
