@@ -1,6 +1,6 @@
-import gleam/http.{Get}
-import gleam/http/response
 import rpc/handler
+import gleam/http.{Get, Post}
+import gleam/http/response
 import wisp.{type Request, type Response}
 
 pub fn handle_request(req: Request) -> Response {
@@ -8,7 +8,7 @@ pub fn handle_request(req: Request) -> Response {
 
   case wisp.path_segments(req) {
     ["ping"] -> ping(req)
-    ["rpc"] -> handler.handle_rpc_request(req)
+    ["rpc"] -> rpc_request(req)
     _ -> not_found()
   }
 }
@@ -45,4 +45,11 @@ fn not_found() {
   wisp.not_found()
   |> wisp.set_header("content-type", "text/plain")
   |> wisp.string_body("Not found.")
+}
+
+fn rpc_request(request: Request) {
+  case request.method {
+    Post -> handler.post_response(request)
+    _ -> wisp.method_not_allowed([Post])
+  }
 }

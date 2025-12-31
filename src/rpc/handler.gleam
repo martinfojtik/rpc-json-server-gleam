@@ -1,20 +1,11 @@
-import gleam/http.{Post}
+import gleam/dynamic/decode.{type Dynamic}
 import gleam/http/request
 import gleam/json
 import gleam/result
 import jsonrpc
-import wisp.{type Request}
-import gleam/option.{type Option, None, Some}
-import gleam/dynamic/decode.{type Dynamic}
+import wisp
 
-pub fn handle_rpc_request(request: Request) {
-  case request.method {
-    Post -> post_response(request)
-    _ -> wisp.method_not_allowed([Post])
-  }
-}
-
-fn post_response(base_request: request.Request(wisp.Connection)) {
+pub fn post_response(base_request: request.Request(wisp.Connection)) {
   use body <- wisp.require_string_body(base_request)
 
   let request_result =
@@ -43,13 +34,16 @@ fn handle_request(
   json_request: jsonrpc.Request(Dynamic),
 ) {
   case json_request.method {
-    m if m == "ping" -> {
-      wisp.json_response("{\"status\": \"OK\"}", 200)
+    "get_pet" -> {
+      let object = json.object([
+        #("name", json.string("Pac-Man"))
+      ])
+
+      wisp.json_response(json.to_string(object), 200)
     }
+
     _ -> wisp.bad_request("invalid method")
   }
-
-
 }
 
 fn handle_notification(
@@ -57,10 +51,6 @@ fn handle_notification(
   notification: jsonrpc.Notification(Dynamic),
 ) {
   case notification.method {
-    // m if m == method.notification_resources_list_changed -> todo
-    // m if m == method.notification_resource_updated -> todo
-    // m if m == method.notification_prompts_list_changed -> todo
-    // m if m == method.notification_tools_list_changed -> todo
-    _ -> wisp.ok()
+    _ -> wisp.bad_request("invalid notification")
   }
 }
